@@ -22,7 +22,7 @@ type ParamLogin struct {
 
 type EmotionalText struct {
 	UserID int64  `json:"user_id" binding:"required"`
-    Text string `json:"text" binding:"required"`
+	Text string `json:"text" binding:"required"`
 }
 
 type EmotionalResponse struct {
