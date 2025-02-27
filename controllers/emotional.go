@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"graduation/logic"
 	"graduation/models"
 	"net/http"
 
@@ -20,5 +21,19 @@ func EmotionalHandler(c *gin.Context) {
 		return
 	}
 
-	
+	result, err := logic.Emotional(c.Request.Context(), p)
+
+	if err != nil {
+		zap.L().Error("logic.Emotional failed", zap.Error(err))
+		c.JSON(http.StatusOK, gin.H{
+			"msg": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"msg": result.Msg,
+		"data": result.Data,
+	})
+
 }

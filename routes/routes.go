@@ -25,6 +25,8 @@ func Setup(mode string) *gin.Engine {
 	v1.POST("/signup", controllers.SignupHandler)
 	v1.POST("/login", controllers.LoginHandler)
 
+	v1.POST("/emotional", controllers.EmotionalHandler)
+
 	// v1.Use(middlewares.JWTAuthMiddleware()) // 应用JWT认证中间件
 
 

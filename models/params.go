@@ -21,9 +21,17 @@ type ParamLogin struct {
 }
 
 type EmotionalText struct {
+	UserID int64  `json:"user_id" binding:"required"`
     Text string `json:"text" binding:"required"`
 }
 
 type EmotionalResponse struct {
+	Msg  string `json:"msg"`
     Data string `json:"data"`
+}
+
+type EmotionalInfo struct {
+	GoodNum int64  `json:"good_num"`
+	BadNum 	int64  `json:"bad_num"`
+	NeutralNum int64  `json:"neutral_num"`
 }

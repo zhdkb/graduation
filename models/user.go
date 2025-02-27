@@ -6,3 +6,7 @@ type User struct {
 	Password	string	`gorm:"column:password"`
 	Token		string
 }
+
+type UserID struct {
+	UserID int64	`json:"user_id"`
+}
