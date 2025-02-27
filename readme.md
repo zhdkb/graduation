@@ -22,9 +22,10 @@ go run main.go
 
 
 目前后端包含四个接口，分别是注册，登录，情绪分析和情绪统计接口，接口具体说明如下。
+<br />
 
-1.注册接口：
-
+## 1.注册接口：
+\
 接口路径：/api/v1/emotional   \
 请求方式：POST
 \
@@ -42,8 +43,9 @@ go run main.go
     "msg": "success"
 }
 ```
+<br />
 
-2.登录接口：
+## 2.登录接口：
 \
 接口路径：/api/v1/login
 \
@@ -64,8 +66,9 @@ go run main.go
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX25hbWUiOiJzbGwiLCJleHAiOjE2NzYwNjQzMjQsImlhdCI6MTY3NTk2MzcyNH0.q9_0_yzqQ1qQ0VJKhq"
 }
 ```
+<br />
 
-3.情绪分析接口：
+## 3.情绪分析接口：
 \
 接口路径：/api/v1/emotional
 \
@@ -85,8 +88,9 @@ go run main.go
     "data": "。。。"  // 详细解释上述语句
 }
 ```
+<br />
 
-4.情绪统计接口：
+## 4.情绪统计接口：
 \
 接口路径：/api/v1/emotional/count/:user_id
 \
