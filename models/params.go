@@ -19,3 +19,11 @@ type ParamLogin struct {
 	Username	string	`json:"username" binding:"required"`
 	Password	string	`json:"password" binding:"required"`
 }
+
+type EmotionalText struct {
+    Text string `json:"text" binding:"required"`
+}
+
+type EmotionalResponse struct {
+    Data string `json:"data"`
+}
