@@ -48,7 +48,7 @@ func LoginHandler(c *gin.Context) {
 		zap.L().Error("Login with invalid param", zap.Error(err))
 
 		c.JSON(http.StatusOK, gin.H{
-			"msg": err, // 翻译错误
+			"msg": err,
 		})
 		return
 	}

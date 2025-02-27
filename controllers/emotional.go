@@ -4,6 +4,7 @@ import (
 	"graduation/logic"
 	"graduation/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -36,4 +37,29 @@ func EmotionalHandler(c *gin.Context) {
 		"data": result.Data,
 	})
 
+}
+
+func EmotionalCountHandler(c *gin.Context) {
+	userIDStr := c.Param("user_id")
+	userid, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"msg": "userID获取失败",
+		})
+		return
+	}
+	result, err := logic.GetEmotionalInfo(c.Request.Context(), int64(userid))
+
+	if err != nil {
+		zap.L().Error("logic.GetEmotionalInfo failed", zap.Error(err))
+		c.JSON(http.StatusOK, gin.H{
+			"msg": err.Error(),
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+			"msg": "success",
+			"data": result,
+		},
+	)
 }
