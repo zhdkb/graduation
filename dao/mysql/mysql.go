@@ -35,6 +35,9 @@ func Init(cfg *settings.MySQLConfig) (err error) {
 	return
 }
 
+func GetDB() *gorm.DB {
+	return db
+}
 
 func Close() {
 	sqldb, _ := db.DB()
