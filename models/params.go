@@ -35,3 +35,7 @@ type EmotionalInfo struct {
 	BadNum 	int64  `json:"bad_num"`
 	NeutralNum int64  `json:"neutral_num"`
 }
+
+func (EmotionalInfo) TableName() string {
+	return "emotional_infos"
+}

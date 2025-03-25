@@ -7,10 +7,10 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root1234
       MYSQL_DATABASE: graduation
-      MYSQL_USER: root
+      MYSQL_USER: rootsll
       MYSQL_PASSWORD: root1234
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
 

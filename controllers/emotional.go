@@ -33,8 +33,8 @@ func EmotionalHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"msg": result.Msg,
-		"data": result.Data,
+		"data": result,
+		"msg": "success",
 	})
 
 }

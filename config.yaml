@@ -17,8 +17,8 @@ log:
 
 mysql:
   host: "127.0.0.1"
-  port: 3306
-  user: "root"
+  port: 3307
+  user: "rootsll"
   password: "root1234"
   dbname: "graduation"
   max_open_conns: 200
