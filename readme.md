@@ -1,17 +1,26 @@
-本文档是我的苏州大学毕业设计项目的后端说明，后端使用go + gin + gorm + mysql完成，其中mysql配置如下：
+本文档是我的苏州大学毕业设计项目的后端说明，后端使用go + gin + gorm + mysql + redis完成，其中mysql和redis配置如下：
 
 ```
 mysql:
   host: "127.0.0.1"
-  port: 3306
-  user: "root"
+  port: 3307
+  user: "rootsll"
   password: "root1234"
   dbname: "graduation"
   max_open_conns: 200
   max_idle_conns: 50
 ```
 
-mysql建议使用docker起一个，这样方便快捷，在该文件的终端执行以下命令：
+```
+redis:
+  host: "127.0.0.1"
+  port: 16379
+  password: ""
+  db: 0
+  pool_size: 100
+```
+
+mysql和redis建议使用docker起一个，这样方便快捷，在该文件的终端执行以下命令：
 ```bash
 docker-compose up -d
 ```
@@ -84,8 +93,12 @@ go run main.go
 返回数据：
 ```json
 {
-    "msg": "good",
-    "data": "。。。"  // 详细解释上述语句
+    "data": {
+        "sentiment": "这句话表达了正面情感",
+        "sentiment_type": 1,
+        "text": "今天心情很好"
+    },
+    "msg": "success"
 }
 ```
 <br />
@@ -96,14 +109,17 @@ go run main.go
 \
 请求方法：GET
 \
-接口传参(参数包含在url里面)：/api/v1/emotional/count/1
+接口传参(参数包含在url里面)：/api/v1/emotional/count/1234
 \
 返回数据：
 ```json
 {
-    "good_num": 1,     // 用户好心情数量
-    "bad_num": 0,      // 用户坏心情数量
-    "neutral_num": 0   // 用户中立心情数量
+    "data": {
+        "good_num": 2,
+        "bad_num": 0,
+        "neutral_num": 0
+    },
+    "msg": "success"
 }
 ```
 
