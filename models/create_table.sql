@@ -39,3 +39,27 @@ CREATE TABLE emotional_infos (
     modify_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     INDEX idx_user_id (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- 创建打卡时间关系表
+DROP TABLE IF EXISTS `check_in_records`;
+CREATE TABLE check_in_records (
+    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '自增主键',
+    user_id INT NOT NULL COMMENT '用户ID',
+    check_in_time DATETIME NOT NULL COMMENT '打卡时间',
+    streak_days INT DEFAULT 1 COMMENT '连续打卡天数',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    UNIQUE INDEX idx_user_time (user_id, check_in_time)  -- 联合索引
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 创建每个用户的打卡统计表
+DROP TABLE IF EXISTS `user_check_in_counts`;
+CREATE TABLE user_check_in_counts (
+    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '自增主键',
+    user_id INT NOT NULL COMMENT '用户ID',
+    check_in_count INT DEFAULT 0 COMMENT '打卡次数',
+    max_streak_days INT DEFAULT 0 COMMENT '最大连续打卡天数',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_user_id (user_id)  -- 为 user_id 字段创建索引
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
