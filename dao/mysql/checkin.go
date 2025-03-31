@@ -17,7 +17,7 @@ func GetCheckInCount(ctx context.Context, userID int64, checkInTime time.Time) (
 	// 去数据库中查询前一天的连续打卡天数
 	var checkInRecord models.CheckInRecord
 	lastDay := checkInTime.AddDate(0, 0, -1).Format("2006-01-02")
-	db.Where("check_in_time < ? and check_in_time >= ?", checkInTime, lastDay).Where("user_id = ?", userID)
+	db.Where("check_in_time < ? and check_in_time >= ?", checkInTime, lastDay).Where("user_id = ?", userID).Order("check_in_time desc")
 	err := db.Find(&checkInRecord).Error
 	if err != nil {
 		// if errors.Is(err, gorm.ErrRecordNotFound) {

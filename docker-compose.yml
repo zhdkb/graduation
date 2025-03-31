@@ -17,7 +17,7 @@ services:
     image: redis:latest
     container_name: my-redis
     ports:
-      - "16379:6379"  # 映射本地端口 6379 到容器的 6379 端口
+      - "16379:6379"  # 映射本地端口 16379 到容器的 6379 端口
     volumes:
       - redis-data:/data  # 持久化数据到卷
     restart: always  # 容器崩溃后自动重启
