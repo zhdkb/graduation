@@ -24,9 +24,9 @@ func CheckIn(ctx context.Context, check *domain.CheckIn) (string, error) {
 	}
 
 	go func () {
-		newctx, cancel := context.WithTimeout(context.Background(), 2 * time.Second)
+		rdbctx, cancel := context.WithTimeout(context.Background(), 2 * time.Second)
 		defer cancel()
-		err := redis.SetCheckInCount(newctx, check.CheckInTime)
+		err := redis.SetCheckInCount(rdbctx, check.CheckInTime)
 		if err != nil {
 			zap.L().Error("今日打卡总数存入redis失败", zap.Error(err))
 			return
