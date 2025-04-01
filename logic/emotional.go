@@ -4,22 +4,47 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"graduation/dao/mysql"
 	"graduation/domain"
 	"graduation/models"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
 	"go.uber.org/zap"
 )
 
 func Emotional(ctx context.Context, p *models.EmotionalText) (*domain.EmotionalReply, error) {
 	// 请求情感分析接口
-	reply, err := sendemotionInfo(ctx, p)
-	if err != nil {
+	replychan := make(chan *domain.EmotionalReply, 1)
+	errapichan := make(chan error, 1)
+
+	go func() {
+		defer close(replychan)
+		defer close(errapichan)
+		reply, err := getEmotionalInfofromali(ctx, p)
+		if err != nil {
+			errapichan <- err
+			return
+		}
+		replychan <- reply
+	} ()
+
+	// 控制请求阿里的接口超时
+	var reply *domain.EmotionalReply
+	select {
+	case reply = <-replychan:
+		break
+	case err := <-errapichan:
 		zap.L().Error("sendemotionInfo failed", zap.Error(err))
 		return nil, err
+	case <-ctx.Done():
+		zap.L().Error("context timeout", zap.Error(ctx.Err()))
+		return nil, ctx.Err()
 	}
 
 	go func ()  {
@@ -81,4 +106,50 @@ func sendemotionInfo(ctx context.Context, p *models.EmotionalText) (*domain.Emot
 		return nil, err
 	}
 	return &reply, nil
+}
+
+func getEmotionalInfofromali(ctx context.Context, p *models.EmotionalText) (*domain.EmotionalReply, error) {
+	// 请求阿里情感分析接口
+	client, err := sdk.NewClientWithAccessKey("cn-hangzhou", os.Getenv("ACCESS_KEY_ID"), os.Getenv("ACCESS_KEY_SECRET"))
+    if err != nil {
+        panic(err)
+    }
+
+	request := requests.NewCommonRequest()
+	request.Domain = "alinlp.cn-hangzhou.aliyuncs.com"
+    request.Version = "2020-06-29"
+	request.ApiName = "GetSaChGeneral"
+    request.QueryParams["ServiceCode"] = "alinlp"
+    request.QueryParams["Text"] = p.Text
+    // request.QueryParams["TokenizerId"] = "GENERAL_CHN"
+    response, err := client.ProcessCommonRequest(request)
+    if err != nil {
+        panic(err)
+    }
+
+	// 解析请求结果
+	jsonStr := string(response.GetHttpContentBytes())
+    var resp domain.Response
+	err = json.Unmarshal([]byte(jsonStr), &resp)
+	if err != nil {
+		return nil, err
+	}
+
+	// 解析 Data 部分
+	var data domain.DataContent
+	err = json.Unmarshal([]byte(resp.Data), &data)
+	if err != nil {
+		fmt.Println("解析 Data JSON 失败:", err)
+		return nil, err
+	}
+	// 打印情绪分析结果
+	fmt.Printf("\n情感分析结果：%s \n正面情绪的概率为：%.4f \n负面情绪的概率为：%.4f \n中性情绪的概率为：%.4f \n",
+		data.Result.Sentiment, data.Result.PositiveProb, data.Result.NegativeProb, data.Result.NeutralProb)
+
+	var result domain.EmotionalReply
+	result.Text = p.Text
+	result.SentimentType = domain.GetSentimentType()[data.Result.Sentiment]
+	result.Sentiment = domain.GetSentimentMsg()[data.Result.Sentiment]
+
+	return &result, nil
 }

@@ -10,9 +10,16 @@ import (
 	"graduation/settings"
 
 	"go.uber.org/zap"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// 读取 .env 文件
+	if err := godotenv.Load(); err != nil {
+		fmt.Printf("Error loading .env file, err:%v\n", err)
+		return
+	}
+
 	// 加载配置
 	if err := settings.Init(); err != nil {
 		fmt.Printf("init settings failed, err:%v\n", err)
