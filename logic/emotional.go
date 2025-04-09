@@ -26,7 +26,7 @@ func Emotional(ctx context.Context, p *models.EmotionalText) (*domain.EmotionalR
 	go func() {
 		defer close(replychan)
 		defer close(errapichan)
-		reply, err := getEmotionalInfofromali(ctx, p)
+		reply, err := getEmotionalInfofromali(p)
 		if err != nil {
 			errapichan <- err
 			return
@@ -108,7 +108,7 @@ func sendemotionInfo(ctx context.Context, p *models.EmotionalText) (*domain.Emot
 	return &reply, nil
 }
 
-func getEmotionalInfofromali(ctx context.Context, p *models.EmotionalText) (*domain.EmotionalReply, error) {
+func getEmotionalInfofromali(p *models.EmotionalText) (*domain.EmotionalReply, error) {
 	// 请求阿里情感分析接口
 	client, err := sdk.NewClientWithAccessKey("cn-hangzhou", os.Getenv("ACCESS_KEY_ID"), os.Getenv("ACCESS_KEY_SECRET"))
     if err != nil {
