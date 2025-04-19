@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>情绪分析 | 心灵助手</title>
+    <link rel="stylesheet" href="/static/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #f472b6;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --success: #10b981;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f3f4f6;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-container {
+            max-width: 900px;
+            width: 100%;
+            margin: auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .header-title {
+            font-weight: 600;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-title i {
+            margin-right: 12px;
+            font-size: 22px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .quick-action-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .quick-action-btn i {
+            margin-right: 6px;
+        }
+
+        .btn-checkin {
+            background: linear-gradient(to right, var(--success), #34d399);
+        }
+
+        .btn-stats {
+            background: linear-gradient(to right, var(--info), #60a5fa);
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .btn-logout i {
+            margin-right: 6px;
+        }
+
+        .dashboard-body {
+            padding: 30px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .analysis-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 30px;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            resize: none;
+            transition: all 0.3s;
+            min-height: 150px;
+            background-color: var(--light);
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            background-color: white;
+        }
+
+        .btn-analyze {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-analyze:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-analyze i {
+            margin-right: 8px;
+        }
+
+        .result-container {
+            margin-top: 30px;
+            flex-grow: 1;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .result-title i {
+            margin-right: 10px;
+        }
+
+        .result-content {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--dark);
+        }
+
+        .original-text {
+            background-color: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #e5e7eb;
+        }
+
+        .sentiment-result {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 8px;
+            background-color: #f0fdf4;
+            border-left: 4px solid var(--success);
+        }
+
+        .sentiment-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--success);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .sentiment-text {
+            font-weight: 500;
+        }
+
+        .alert-danger {
+            background-color: #fef2f2;
+            border-left: 4px solid var(--danger);
+            color: var(--danger);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-danger i {
+            margin-right: 10px;
+        }
+
+        /* 情感结果颜色 */
+        .positive {
+            background-color: #f0fdf4;
+            border-left-color: var(--success);
+        }
+
+        .negative {
+            background-color: #fef2f2;
+            border-left-color: var(--danger);
+        }
+
+        .neutral {
+            background-color: #eff6ff;
+            border-left-color: var(--info);
+        }
+
+        .mixed {
+            background-color: #fffbeb;
+            border-left-color: var(--warning);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                border-radius: 12px;
+            }
+            
+            .dashboard-header {
+                padding: 20px;
+            }
+            
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .quick-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .quick-action-btn {
+                flex-grow: 1;
+                justify-content: center;
+            }
+            
+            .dashboard-body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="header-top">
+                    <h2 class="header-title">
+                        <i class="fas fa-brain"></i> 心灵助手 | 情绪分析
+                    </h2>
+                    <div class="quick-actions">
+                        <a href="/checkin" class="quick-action-btn btn-checkin">
+                            <i class="fas fa-calendar-check"></i> 每日打卡
+                        </a>
+                        <a href="/stats" class="quick-action-btn btn-stats">
+                            <i class="fas fa-chart-line"></i> 情绪统计
+                        </a>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="window.location.href='/logout'">
+                    <i class="fas fa-sign-out-alt"></i> 退出登录
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-body">
+            <div class="analysis-card">
+                <h3 class="card-title"><i class="fas fa-comment-dots"></i> 情绪分析</h3>
+                <form th:action="@{/analyze}" method="post">
+                    <textarea class="form-textarea" id="text" name="text" placeholder="请输入您想分析的文本内容..." required th:text="${analyzedText}"></textarea>
+                    <button type="submit" class="btn-analyze">
+                        <i class="fas fa-chart-pie"></i> 分析情绪
+                    </button>
+                </form>
+            </div>
+
+            <div class="result-container" th:if="${analyzedText}">
+                <div class="result-card">
+                    <h4 class="result-title"><i class="fas fa-align-left"></i> 分析原文</h4>
+                    <div class="original-text" th:text="${analyzedText}"></div>
+                </div>
+
+                <div class="result-card" th:if="${sentiment}">
+                    <h4 class="result-title"><i class="fas fa-chart-bar"></i> 分析结果</h4>
+                    
+                    <div class="sentiment-result"
+                         th:classappend="
+                            ${sentiment_type == 1} ? 'positive' :
+                            (${sentiment_type == 2} ? 'negative' : 'neutral')">
+                         
+                        <div class="sentiment-icon">
+                            <i th:class="
+                                ${sentiment_type == 1} ? 'fas fa-smile' :
+                                (${sentiment_type == 2} ? 'fas fa-frown' : 'fas fa-meh')">
+                            </i>
+                        </div>
+                        
+                        <div class="sentiment-text">
+                            <strong>情绪状态：</strong>
+                            <span th:text="${sentiment}">未知</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-danger" th:if="${error}">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 动态调整文本区域高度
+        const textarea = document.querySelector('.form-textarea');
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+            
+            // 初始化时调整一次高度
+            setTimeout(() => {
+                textarea.style.height = 'auto';
+                textarea.style.height = (textarea.scrollHeight) + 'px';
+            }, 100);
+        }
+    </script>
+</body>
+</html>

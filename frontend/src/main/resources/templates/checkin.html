@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>每日打卡 | 心灵助手</title>
+    <link rel="stylesheet" href="/static/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #f472b6;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --success: #10b981;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .checkin-container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .checkin-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            z-index: -1;
+            clip-path: ellipse(120% 80% at 50% 0%);
+        }
+
+        .checkin-header {
+            padding: 40px 40px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .checkin-header h2 {
+            font-weight: 700;
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkin-header h2 i {
+            margin-right: 12px;
+        }
+
+        .checkin-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .checkin-body {
+            padding: 0 40px 40px;
+        }
+
+        .user-greeting {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 18px;
+            color: var(--dark);
+        }
+
+        .user-greeting span {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .checkin-form {
+            text-align: center;
+        }
+
+        .btn-checkin {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.3);
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-checkin:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-checkin:active {
+            transform: translateY(1px);
+        }
+
+        .btn-checkin i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .btn-checkin::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+            transform: translateX(-100%);
+            transition: all 0.6s ease;
+        }
+
+        .btn-checkin:hover::after {
+            transform: translateX(100%);
+        }
+
+        .btn-checkin:disabled {
+            background: linear-gradient(to right, #a5b4fc, #818cf8);
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn-checkin:disabled::after {
+            display: none;
+        }
+
+        /* 打卡动画容器 */
+        .animation-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        /* 初始心形动画 */
+        .checkin-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .checkin-circle {
+            width: 100%;
+            height: 100%;
+            border: 8px solid rgba(99, 102, 241, 0.1);
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .checkin-circle::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 8px solid transparent;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            top: -8px;
+            left: -8px;
+            animation: spin 1.5s linear infinite;
+        }
+
+        .checkin-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            color: var(--primary);
+        }
+
+        /* 打卡成功动画 */
+        .checkin-success {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .success-circle {
+            width: 100%;
+            height: 100%;
+            border: 8px solid rgba(16, 185, 129, 0.1);
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: pulse 2s infinite;
+        }
+
+        .success-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            color: var(--success);
+            background-color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkin-success.visible {
+            opacity: 1;
+        }
+
+        .checkin-animation.hidden {
+            opacity: 0;
+        }
+
+        /* 结果卡片 */
+        .result-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-top: 30px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .success-card {
+            border-left: 4px solid var(--success);
+        }
+
+        .info-card {
+            border-left: 4px solid var(--info);
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-title i {
+            color: var(--success);
+        }
+
+        .info-title i {
+            color: var(--info);
+        }
+
+        .result-title i {
+            margin-right: 10px;
+        }
+
+        .result-content {
+            font-size: 16px;
+            color: var(--dark);
+        }
+
+        /* 返回按钮 */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 30px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        .btn-back:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+            text-decoration: none;
+        }
+
+        .btn-back i {
+            margin-right: 8px;
+        }
+
+        /* 动画效果 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 576px) {
+            .checkin-container {
+                border-radius: 12px;
+            }
+            
+            .checkin-header {
+                padding: 30px 25px;
+            }
+            
+            .checkin-body {
+                padding: 0 25px 30px;
+            }
+            
+            .btn-checkin {
+                padding: 14px 28px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="checkin-container">
+        <div class="checkin-header">
+            <h2><i class="fas fa-calendar-check"></i> 每日打卡</h2>
+            <p>记录您今天的情绪状态</p>
+        </div>
+
+        <div class="checkin-body">
+            <div class="user-greeting">
+                你好，<span th:text="${username}"></span>！
+            </div>
+
+            <div class="animation-container">
+                <!-- 初始心形动画 -->
+                <div class="checkin-animation" th:classappend="${result != null} ? 'hidden' : ''">
+                    <div class="checkin-circle"></div>
+                    <div class="checkin-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                </div>
+                
+                <!-- 打卡成功动画 -->
+                <div class="checkin-success" th:classappend="${result != null && !result.contains('已经打卡')} ? 'visible' : ''">
+                    <div class="success-circle"></div>
+                    <div class="success-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post" action="/checkin" class="checkin-form" id="checkinForm">
+                <button type="submit" class="btn-checkin" id="checkinButton" 
+                        th:disabled="${result != null && result.contains('已经打卡')}">
+                    <i class="fas fa-check-circle"></i> 
+                    <span th:if="${result == null || !result.contains('已经打卡')}">立即打卡</span>
+                    <span th:if="${result != null && result.contains('已经打卡')}">今日已打卡</span>
+                </button>
+            </form>
+
+            <!-- 打卡成功提示 -->
+            <div th:if="${result != null && !result.contains('已经打卡')}" class="result-card success-card" id="successMessage">
+                <h3 class="result-title success-title">
+                    <i class="fas fa-check-circle"></i> 打卡成功
+                </h3>
+                <div class="result-content" th:text="${result}"></div>
+            </div>
+
+            <!-- 已打卡提示 -->
+            <div th:if="${result != null && result.contains('已经打卡')}" class="result-card info-card" id="infoMessage">
+                <h3 class="result-title info-title">
+                    <i class="fas fa-info-circle"></i> 提示
+                </h3>
+                <div class="result-content" th:text="${result}"></div>
+            </div>
+
+            <a href="/home" class="btn-back">
+                <i class="fas fa-arrow-left"></i> 返回首页
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkinForm = document.getElementById('checkinForm');
+            const checkinButton = document.getElementById('checkinButton');
+            const originalAnimation = document.querySelector('.checkin-animation');
+            const successAnimation = document.querySelector('.checkin-success');
+            
+            // 如果是从后端返回的页面，不需要处理点击事件
+            if (successAnimation.classList.contains('visible')) return;
+            
+            checkinForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 显示加载状态
+                checkinButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 打卡中...';
+                checkinButton.disabled = true;
+                
+                // 模拟表单提交
+                fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(new FormData(this))
+                })
+                .then(response => response.text())
+                .then(html => {
+                    // 创建一个临时div来解析返回的HTML
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // 提取结果卡片
+                    const resultCard = doc.querySelector('.result-card');
+                    
+                    // 移除之前的提示
+                    const existingResult = document.querySelector('.result-card');
+                    if (existingResult) existingResult.remove();
+                    
+                    // 插入新的提示
+                    if (resultCard) {
+                        resultCard.style.display = 'none'; // 先隐藏
+                        checkinForm.insertAdjacentElement('afterend', resultCard);
+                        
+                        // 切换动画
+                        originalAnimation.classList.add('hidden');
+                        successAnimation.classList.add('visible');
+                        
+                        // 恢复按钮状态
+                        checkinButton.innerHTML = '<i class="fas fa-check-circle"></i> 今日已打卡';
+                        checkinButton.disabled = true;
+                        
+                        // 显示结果卡片
+                        setTimeout(() => {
+                            resultCard.style.display = 'block';
+                        }, 100);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    checkinButton.innerHTML = '<i class="fas fa-check-circle"></i> 立即打卡';
+                    checkinButton.disabled = false;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+server:
+  port: 8081  # 前端项目端口
+
+spring:
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+  mvc:
+    static-path-pattern: /static/**
+  resources:
+    static-locations: classpath:/static/
+
+backend:
+  base-url: http://localhost:8080/api/v1

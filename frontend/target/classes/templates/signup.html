@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>创建新账户</title>
+    <link rel="stylesheet" href="/static/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --secondary: #fd79a8;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .signup-container {
+            width: 100%;
+            max-width: 520px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .signup-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            z-index: -1;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+        
+        .signup-header {
+            padding: 50px 40px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        .signup-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .signup-header p {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+        
+        .signup-body {
+            padding: 0 40px 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #dfe6e9;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background-color: var(--light);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.2);
+            outline: none;
+            background-color: white;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 45px;
+            cursor: pointer;
+            color: #b2bec3;
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+        
+        .password-strength {
+            height: 4px;
+            background: #dfe6e9;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .strength-meter {
+            height: 100%;
+            width: 0;
+            background: var(--danger);
+            transition: all 0.3s;
+        }
+        
+        .password-hints {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #636e72;
+        }
+        
+        .password-hint {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        
+        .password-hint i {
+            margin-right: 6px;
+            font-size: 12px;
+        }
+        
+        .btn-signup {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(108, 92, 231, 0.3);
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
+        }
+        
+        .btn-signup::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+            transform: translateX(-100%);
+            transition: all 0.5s ease;
+        }
+        
+        .btn-signup:hover::after {
+            transform: translateX(100%);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #636e72;
+            font-size: 14px;
+        }
+        
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            position: relative;
+            padding-left: 60px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .alert::before {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+        }
+        
+        .alert-danger {
+            background-color: rgba(214, 48, 49, 0.1);
+            border-left: 4px solid var(--danger);
+            color: var(--danger);
+        }
+        
+        .alert-danger::before {
+            content: '\f057';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+        }
+        
+        .alert-success {
+            background-color: rgba(0, 184, 148, 0.1);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+        }
+        
+        .alert-success::before {
+            content: '\f058';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+        }
+        
+        .terms {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #636e72;
+            text-align: center;
+        }
+        
+        .terms a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .terms a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 576px) {
+            .signup-container {
+                border-radius: 15px;
+            }
+            
+            .signup-header,
+            .signup-body {
+                padding: 30px 25px;
+            }
+            
+            .signup-header h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-header">
+            <h1>加入我们</h1>
+            <p>创建您的账户开始旅程</p>
+        </div>
+        
+        <div class="signup-body">
+            <form th:action="@{/signup}" method="post">
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
+                
+                <div class="form-group">
+                    <br>
+                    <label class="form-label" for="username">用户名</label>
+                    <input class="form-control" id="username" type="text" name="username" required 
+                           placeholder="输入4-20个字符" />
+                    <div class="password-hints">
+                        <div class="password-hint"><i class="fas fa-info-circle"></i> 可以使用字母、数字和下划线</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="password">密码</label>
+                    <input class="form-control" id="password" type="password" name="password" required 
+                           placeholder="至少8个字符" />
+                    <i class="password-toggle fas fa-eye"></i>
+                    <div class="password-strength">
+                        <div class="strength-meter" id="strength-meter"></div>
+                    </div>
+                    <div class="password-hints">
+                        <div class="password-hint"><i class="fas fa-check-circle"></i> 至少8个字符</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="re_password">确认密码</label>
+                    <input class="form-control" id="re_password" type="password" name="re_password" required 
+                           placeholder="再次输入密码" />
+                    <i class="password-toggle fas fa-eye"></i>
+                </div>
+                
+                <button type="submit" class="btn-signup">立即注册</button>
+                
+                <div class="terms">
+                    点击注册即表示您同意我们的<a href="#">服务条款</a>和<a href="#">隐私政策</a>
+                </div>
+                
+                <div class="login-link">
+                    已有账户？<a href="/login">立即登录</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // 密码显示/隐藏切换
+        const passwordToggles = document.querySelectorAll('.password-toggle');
+        const passwordInputs = document.querySelectorAll('input[type="password"]');
+        
+        passwordToggles.forEach((toggle, index) => {
+            toggle.addEventListener('click', function() {
+                const type = passwordInputs[index].getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInputs[index].setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+            });
+        });
+        
+        // 密码强度检测
+        const passwordInput = document.getElementById('password');
+        const strengthMeter = document.getElementById('strength-meter');
+        
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            
+            // 长度检查
+            if (password.length >= 8) strength += 1;
+            if (password.length >= 12) strength += 1;
+            
+            // 包含数字
+            if (/\d/.test(password)) strength += 1;
+            
+            // 包含字母
+            if (/[a-zA-Z]/.test(password)) strength += 1;
+            
+            // 包含特殊字符
+            if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+            
+            // 更新强度条
+            const width = (strength / 5) * 100;
+            strengthMeter.style.width = width + '%';
+            
+            // 更新颜色
+            if (strength <= 1) {
+                strengthMeter.style.backgroundColor = 'var(--danger)';
+            } else if (strength <= 3) {
+                strengthMeter.style.backgroundColor = 'var(--warning)';
+            } else {
+                strengthMeter.style.backgroundColor = 'var(--success)';
+            }
+        });
+    </script>
+</body>
+</html>

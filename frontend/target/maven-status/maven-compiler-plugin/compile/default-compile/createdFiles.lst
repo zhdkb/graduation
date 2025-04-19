@@ -1,0 +1,4 @@
+com\example\emotiontracker\controller\HomeController.class
+com\example\emotiontracker\EmotionTrackerApplication.class
+com\example\emotiontracker\controller\AuthController.class
+com\example\emotiontracker\controller\StatsController.class
