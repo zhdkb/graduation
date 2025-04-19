@@ -45,7 +45,7 @@ CREATE TABLE emotional_infos (
 DROP TABLE IF EXISTS `check_in_records`;
 CREATE TABLE check_in_records (
     id INT PRIMARY KEY AUTO_INCREMENT COMMENT '自增主键',
-    user_id INT NOT NULL COMMENT '用户ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
     check_in_time DATETIME NOT NULL COMMENT '打卡时间',
     streak_days INT DEFAULT 1 COMMENT '连续打卡天数',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -56,7 +56,7 @@ CREATE TABLE check_in_records (
 DROP TABLE IF EXISTS `user_check_in_counts`;
 CREATE TABLE user_check_in_counts (
     id INT PRIMARY KEY AUTO_INCREMENT COMMENT '自增主键',
-    user_id INT NOT NULL COMMENT '用户ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
     check_in_count INT DEFAULT 0 COMMENT '打卡次数',
     max_streak_days INT DEFAULT 0 COMMENT '最大连续打卡天数',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

@@ -17,6 +17,7 @@ func Setup(mode string) *gin.Engine {
 	}
 
 	r := gin.New()
+	r.Use(CORSMiddleware())
 
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
 

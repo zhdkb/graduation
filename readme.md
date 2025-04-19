@@ -79,7 +79,7 @@ go run main.go
 
 ## 3.情绪分析接口：
 \
-接口路径：/api/v1/emotional
+接口路径：/api/v1/signup
 \
 请求方法：POST
 \
