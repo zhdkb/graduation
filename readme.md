@@ -35,7 +35,7 @@ go run main.go
 
 ## 1.注册接口：
 \
-接口路径：/api/v1/emotional   \
+接口路径：/api/v1/signup   \
 请求方式：POST
 \
 接口传参：
@@ -79,7 +79,7 @@ go run main.go
 
 ## 3.情绪分析接口：
 \
-接口路径：/api/v1/signup
+接口路径：/api/v1/emotional
 \
 请求方法：POST
 \
